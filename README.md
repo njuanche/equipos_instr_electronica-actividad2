@@ -1,50 +1,87 @@
-# equipos_instr_electronica-actividad2
-# Estación Meteorológica con Control de Temperatura Automático
+# Control de Temperatura con Arduino y Motor Paso a Paso
 
-Este proyecto consiste en una **estación meteorológica simulada** usando Arduino Uno, sensores y actuadores, implementada en Wokwi.
+## Descripción del sistema
 
----
+Este proyecto implementa un sistema de control de temperatura basado en Arduino, que regula una válvula rotatoria mediante un motor paso a paso controlado por un driver A4988. La válvula modula el flujo de fluido caliente o frío para mantener la temperatura interna en un rango deseado.
 
-## Componentes Utilizados
-
-- Arduino Uno
-- Sensor de temperatura y humedad **DHT22**
-- Pantalla **LCD I2C 16x2**
-- LEDs simulando válvulas:
-  - **LED rojo** → válvula de calefacción
-  - **LED azul** → válvula de enfriamiento
-
+Se integra un sensor DHT22 para medir temperatura y humedad, un LCD I2C para mostrar datos en tiempo real, y un LED RGB para indicaciones visuales de estado del sistema. El control implementado es un algoritmo discontinuo con zona muerta (control de tres posiciones) y actuación proporcional basada en la diferencia entre la temperatura medida y la temperatura objetivo.
 
 ---
 
-## Objetivos del Proyecto
+## Estructura del hardware
 
-- Simular condiciones climáticas (temperatura, humedad).
-- Implementar un algoritmo de control automático de temperatura.
-- Visualizar información en pantalla LCD.
-- Ahorrar energía activando el control solo fuera de la zona muerta.
+| Componente         | Descripción                                       | Conexiones Arduino                      |
+|--------------------|-------------------------------------------------|---------------------------------------|
+| Arduino Uno        | Microcontrolador principal                        | Fuente de alimentación y pines digitales|
+| DHT22              | Sensor de temperatura y humedad                   | Pin digital (por ejemplo, pin 2)       |
+| LCD 16x2 con I2C   | Display para visualización de datos                | Pines SDA (A4) y SCL (A5)               |
+| Driver A4988       | Controlador de motor paso a paso                   | Pins STEP (3), DIR (4), MS1-MS3 (configurados a 5V), VMOT y GND  |
+| Motor paso a paso  | Actuador que regula la válvula                      | Conectado al driver A4988               |
+| LED RGB            | Indicador visual de estados del sistema            | Pines PWM con resistencias en R y B, común a GND |
 
 ---
 
-## Lógica del Control de Temperatura
+## Algoritmo de control
 
-El control se basa en un **algoritmo de tres posiciones con zona muerta y control proporcional**:
+### Objetivo
 
-- **Setpoint fijo:** 25 °C
-- **Zona muerta:** ±3 °C
-- Dentro de la zona muerta, no se actúa.
-- Fuera de la zona muerta:
-  - Se enfría si la temperatura real supera los 28 °C.
-  - Se calienta si es menor a 22 °C.
-  - El control es **proporcional** al error dentro del rango de acción (hasta 255 de PWM).
+Mantener la temperatura interna en un valor deseado (setpoint) mediante la regulación del flujo de fluido caliente o frío, que se controla físicamente con la apertura de una válvula motorizada.
 
-### Parámetros del modelo
+### Funcionamiento básico
 
-- **Relación proporcional del sistema**: 0.5 °C cada 500 ms con PWM al 100%.
-- **Perturbación externa**: la temperatura real (ambiental) influye en un 5% por ciclo en la interna.
-- **Retardo del proceso**: 500 ms por paso de simulación del proceso térmico.
+1. **Medición**: El sensor DHT22 proporciona la temperatura ambiente interna en grados Celsius.
+2. **Comparación**: Se calcula la diferencia `error = temperatura_deseada - temperatura_actual`.
+3. **Zona muerta (histeresis)**: Se define un rango o banda muerta alrededor de la temperatura deseada para evitar oscilaciones frecuentes de la válvula y desgaste del motor. Si el error está dentro de esta banda, no se actúa sobre la válvula.
+4. **Acción de control discontinuo**:
+   - Si `error` es mayor que el umbral positivo, se abre la válvula para permitir paso de fluido caliente.
+   - Si `error` es menor que el umbral negativo, se abre la válvula para permitir paso de fluido frío.
+   - Si `error` está dentro de la banda muerta, la válvula se mantiene fija.
+5. **Actuación proporcional**:
+   - La apertura de la válvula se modula proporcionalmente a la magnitud del error (diferencia de temperatura).
+   - El número de pasos que se manda al motor paso a paso es proporcional a `|error|`, controlando así la apertura de la válvula.
+   - El sentido de giro del motor define si se abre la válvula para calor (giro horario) o para frío (giro antihorario).
+6. **Actualización continua**: El sistema lee continuamente la temperatura y ajusta la válvula según el algoritmo para mantener la temperatura estable.
 
-```cpp
-tempInterna += (pwmCalor / 255.0) * gananciaProceso;
-tempInterna -= (pwmFrio / 255.0) * gananciaProceso;
-tempInterna += (tempReal - tempInterna) * influenciaAmbiente;
+### Ventajas del control discontinuo con zona muerta
+
+- Evita que el motor paso a paso esté continuamente actuando cuando la temperatura está muy cercana al setpoint.
+- Reduce el desgaste mecánico de la válvula y el consumo energético.
+- Proporciona un control sencillo, efectivo para sistemas con respuesta lenta como regulación térmica.
+
+---
+
+## Descripción detallada del código
+
+- **Lectura de sensores**: Se usa la librería DHT para obtener temperatura y humedad en intervalos regulares.
+- **Control del motor paso a paso**:
+  - Se configura el driver A4988 con microstepping (MS1, MS2, MS3 a 5V para paso completo).
+  - Se definen dos pines digitales para STEP (pasos) y DIR (dirección).
+  - Según el error calculado, se envía un número proporcional de pulsos STEP con la dirección adecuada.
+- **Visualización en LCD I2C**:
+  - Se muestra la temperatura actual, la temperatura deseada y el estado de la válvula (cerrada, abierta hacia calor o abierta hacia frío).
+- **LED RGB**:
+  - Cambia de color según el estado del sistema: por ejemplo, roja si la válvula de calor está abierta, azul si está abierta la de refrigeración.
+
+---
+
+## Diagrama de bloques del sistema
+
+![Diagrama de bloques del circuito](circuito.jpg)
+
+---
+
+## Conexiones clave del circuito
+
+- **DHT22**: Pin DATA conectado al pin digital 2 del Arduino, alimentación 5V y GND.
+- **LCD I2C**: SDA a A4, SCL a A5, alimentación 5V y GND.
+- **Driver A4988**:
+  - VMOT a 5V externo o regulado, GND común.
+  - STEP a pin 3 Arduino.
+  - DIR a pin 4 Arduino.
+  - MS1, MS2, MS3 a 5V para paso completo.
+  - RESET y SLEEP conectados juntos a 5V para habilitar.
+- **Motor paso a paso**: conectados a salidas A+/A-, B+/B- del driver A4988.
+- **LED RGB**: resistencias de 220 Ω en los pines R y B, comunes a GND, conectados a pines 9 y 10 del Arduino (según código).
+
+---
+
