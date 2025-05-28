@@ -91,10 +91,9 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
 #### 2. Control con zona muerta
 
 Se define:
-This sentence uses $\` and \`$ delimiters to show math inline: $`\sqrt{3x-1}+(1+x)^2`$
-- $` T_s ` emperatura de consigna
-- $$ \Delta $$: semiancho de zona muerta
-- \( T_m \): temperatura medida
+- $` T_s `$ emperatura de consigna
+- $`\Delta `$: semiancho de zona muerta
+- $'T_m \`$: temperatura medida
 
 El comportamiento del control se describe así:
 
@@ -102,25 +101,25 @@ $$
 \text{Zona muerta} = [T_s - \Delta,\quad T_s + \Delta]
 $$
 
-- Si \( T_m < T_s - \Delta \) → Activar calor:
+- Si $`( T_m < T_s - \Delta ) `$ → Activar calor:
   
   $$
   PWM_{calor} = \text{constrain}(k \cdot (T_s - \Delta - T_m),\ 0,\ 255)
   $$
 
-- Si \( T_m > T_s + \Delta \) → Activar frío:
+- Si $`( T_m > T_s + \Delta ) `$ → Activar frío:
   
   $$
   PWM_{frio} = \text{constrain}(k \cdot (T_m - T_s - \Delta),\ 0,\ 255)
   $$
 
-- Si \( T_m \in [T_s - \Delta,\ T_s + \Delta] \) → No hacer nada:
+- Si $`( T_m \in [T_s - \Delta,\ T_s + \Delta] )`$ → No hacer nada:
   
   $$
   PWM_{calor} = PWM_{frio} = 0
   $$
 
-Donde \( k \) es una constante de ganancia proporcional (ej. 20.0).
+Donde $` k  `$ es una constante de ganancia proporcional (ej. 20.0).
 
 ---
 
@@ -136,7 +135,7 @@ $$
 
 #### 4. Conversión de ángulo a pasos de motor
 
-Con \( \text{stepsPerRev} = 3200 \) pasos/rev (1.8° con 1/16 microstepping):
+Con $` \text{stepsPerRev} = 3200 `$ pasos/rev (1.8° con 1/16 microstepping):
 
 $$
 \text{pasos} = \left( \frac{\theta}{359} \right) \cdot \text{stepsPerRev}
@@ -153,8 +152,8 @@ $$
 
 #### 6. Indicadores LED
 
-- LED RGB Azul (pin 10): se enciende si \( PWM_{frio} > 0 \)
-- LED RGB Rojo (pin 9): se enciende si \( PWM_{calor} > 0 \)
+- LED RGB Azul (pin 10): se enciende si $` PWM_{frio} > 0 `$
+- LED RGB Rojo (pin 9): se enciende si $` PWM_{calor} > 0 `$
 
 ---
 
