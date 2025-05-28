@@ -103,21 +103,15 @@ $$
 
 - Si $`( T_m < T_s - \Delta ) `$ → Activar calor:
   
-  $$
-  PWM_{calor} = \text{constrain}(k \cdot (T_s - \Delta - T_m),\ 0,\ 255)
-  $$
+  $`PWM_{calor} = \text{constrain}(k \cdot (T_s - \Delta - T_m),\ 0,\ 255) `$
 
 - Si $`( T_m > T_s + \Delta ) `$ → Activar frío:
   
-  $$
-  PWM_{frio} = \text{constrain}(k \cdot (T_m - T_s - \Delta),\ 0,\ 255)
-  $$
+  $`PWM_{frio} = \text{constrain}(k \cdot (T_m - T_s - \Delta),\ 0,\ 255) `$
 
 - Si $`( T_m \in [T_s - \Delta,\ T_s + \Delta] )`$ → No hacer nada:
   
-  $$
-  PWM_{calor} = PWM_{frio} = 0
-  $$
+  $`PWM_{calor} = PWM_{frio} = 0 `$
 
 Donde $` k  `$ es una constante de ganancia proporcional (ej. 20.0).
 
