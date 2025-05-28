@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 58.2, "left": -19.8, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 144.3,
+      "left": 330.6,
+      "attrs": { "temperature": "-40" }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": 323.2,
+      "left": 360.8,
+      "attrs": { "pins": "i2c" }
+    },
+    {
+      "type": "wokwi-rgb-led",
+      "id": "rgb1",
+      "top": 61.6,
+      "left": 327.5,
+      "attrs": { "common": "cathode" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 4.25,
+      "left": 315.4,
+      "rotate": 180,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": -14.95,
+      "left": 315.4,
+      "rotate": 180,
+      "attrs": { "value": "220" }
+    },
+    { "type": "wokwi-a4988", "id": "drv1", "top": 302.4, "left": -168, "attrs": {} },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "stepper1",
+      "top": 22.81,
+      "left": -210.77,
+      "attrs": { "size": "17", "arrow": "orange", "display": "angle" }
+    },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "stepper2",
+      "top": 22.81,
+      "left": -402.77,
+      "attrs": { "size": "17", "arrow": "orange", "display": "angle" }
+    },
+    { "type": "wokwi-a4988", "id": "drv2", "top": 302.4, "left": -340.8, "attrs": {} }
+  ],
+  "connections": [
+    [ "r2:2", "uno:9", "green", [ "h0" ] ],
+    [ "r3:2", "uno:10", "green", [ "h0" ] ],
+    [ "stepper1:A-", "drv1:2B", "green", [ "v57.6", "h48", "v67.12" ] ],
+    [ "stepper1:A+", "drv1:2A", "green", [ "v48", "h48", "v86.32" ] ],
+    [ "stepper1:B+", "drv1:1A", "green", [ "v38.4", "h48", "v105.52" ] ],
+    [ "stepper1:B-", "drv1:1B", "green", [ "v28.8", "h47.99", "v124.8", "h-48.15" ] ],
+    [ "drv1:VMOT", "uno:5V", "red", [ "h192.15", "v0.08", "h67.2" ] ],
+    [ "drv1:MS1", "uno:5V", "red", [ "h-19.2", "v-19.2", "h268.8", "v0", "h48" ] ],
+    [ "drv1:MS1", "drv1:MS2", "green", [ "h0" ] ],
+    [ "drv1:MS2", "drv1:MS3", "green", [ "h0" ] ],
+    [ "drv1:RESET", "drv1:SLEEP", "gold", [ "h-28.8", "v9.6" ] ],
+    [ "drv1:STEP", "uno:3", "green", [ "h-38.4", "v28.8", "h460.8", "v-345.6", "h-52" ] ],
+    [ "drv1:DIR", "uno:4", "green", [ "h-28.8", "v9.6", "h460.8", "v-345.6", "h-71.1" ] ],
+    [ "drv1:VDD", "uno:5V", "red", [ "h0" ] ],
+    [ "drv1:GND.1", "uno:GND.2", "black", [ "v0.08", "h268.95" ] ],
+    [ "lcd1:SCL", "uno:A5", "green", [ "h-57.6", "v0.3" ] ],
+    [ "lcd1:SDA", "uno:A4", "green", [ "h-67.2", "v-9.4" ] ],
+    [ "lcd1:GND", "uno:GND.2", "black", [ "h0" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "h0" ] ],
+    [ "drv1:GND.2", "uno:GND.2", "black", [ "h0" ] ],
+    [ "dht1:GND", "uno:GND.2", "black", [ "v38.4", "h-201.6" ] ],
+    [ "dht1:VCC", "uno:5V", "red", [ "v48", "h0" ] ],
+    [ "dht1:SDA", "uno:2", "green", [ "v19.2", "h-76.7", "v-220.8", "h-61.7" ] ],
+    [ "rgb1:R", "r2:1", "green", [ "v19.2", "h57.6", "v-76.8" ] ],
+    [ "rgb1:B", "r3:1", "green", [ "v9.6", "h20.8", "v-85.85" ] ],
+    [ "rgb1:COM", "uno:GND.2", "black", [ "v18.8", "h-57.5", "v163.2", "h-124.8" ] ],
+    [ "drv2:MS1", "drv2:MS2", "green", [ "h0" ] ],
+    [ "drv2:MS2", "drv2:MS3", "green", [ "h0" ] ],
+    [ "drv2:RESET", "drv2:SLEEP", "gold", [ "h-28.8", "v9.6" ] ],
+    [ "uno:5V", "drv2:MS1", "red", [ "v28.7", "h-495.4", "v38.4" ] ],
+    [ "drv2:VMOT", "uno:5V", "red", [ "h19.35", "v-38.32", "h409" ] ],
+    [ "drv2:VDD", "uno:5V", "red", [ "h28.95", "v38.48", "h19.2" ] ],
+    [ "drv2:GND.2", "uno:GND.2", "black", [ "h28.95", "v-28.72", "h408.9" ] ],
+    [ "stepper2:A-", "drv2:2B", "green", [ "v48", "h86.4", "v76.72" ] ],
+    [ "stepper2:A+", "drv2:2A", "green", [ "v38.4", "h86.4", "v95.92" ] ],
+    [ "stepper2:B+", "drv2:1A", "green", [ "v28.8", "h86.4", "v115.12" ] ],
+    [ "stepper2:B-", "drv2:1B", "green", [ "v19.2", "h86.39", "v134.32" ] ],
+    [ "drv2:GND.1", "uno:GND.2", "black", [ "v0.08", "h19.35", "v38.4", "h403.2" ] ],
+    [ "drv2:DIR", "uno:6", "green", [ "h-19.2", "v48", "h316.8", "v-384", "h217.1" ] ],
+    [
+      "drv2:STEP",
+      "uno:5",
+      "green",
+      [ "h-28.8", "v67.2", "h336", "v-240", "h0", "v-144", "h211.2" ]
+    ]
+  ],
+  "dependencies": {}
+}

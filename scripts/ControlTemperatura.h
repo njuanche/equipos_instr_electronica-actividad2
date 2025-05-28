@@ -4,11 +4,10 @@
 void setupControlTemperatura();
 void loopControlTemperatura();
 
+int getPWMCalor();
+int getPWMFrio();
 float getTemperaturaAmbiente();
 float getTemperaturaInterna();
 float getTemperaturaDeseada();
-
-int getPWMCalor();
-int getPWMFrio();
 
 #endif
