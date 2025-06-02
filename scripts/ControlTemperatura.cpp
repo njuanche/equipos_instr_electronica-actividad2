@@ -1,5 +1,9 @@
+#include <Arduino.h>
 #include "ControlTemperatura.h"
 #include <DHT.h>  // Sensor DHT22
+#include <LiquidCrystal_I2C.h> 
+
+extern LiquidCrystal_I2C lcd;
 
 // Pines y configuración del sensor
 #define DHTPIN 2
@@ -100,4 +104,18 @@ float getTemperaturaInterna() {
 
 float getTemperaturaDeseada() {
   return tempDeseada;
+}
+
+void mostrarDatosTemperatura() {
+  float t = getTemperaturaAmbiente();
+  float tint = getTemperaturaInterna();
+  lcd.setCursor(0, 0);
+  lcd.print("TAmb: ");
+  lcd.print(t, 1);
+  lcd.print(" C    ");
+
+  lcd.setCursor(0, 1);
+  lcd.print("TSist: ");
+  lcd.print(tint, 1);
+  lcd.print(" C    ");
 }

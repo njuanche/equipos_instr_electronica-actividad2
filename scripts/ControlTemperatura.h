@@ -3,6 +3,8 @@
 
 void setupControlTemperatura();
 void loopControlTemperatura();
+void mostrarDatosTemperatura();
+
 
 int getPWMCalor();
 int getPWMFrio();
