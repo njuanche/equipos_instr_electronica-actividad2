@@ -15,6 +15,7 @@ xxxxxx
 | Driver A4988       | Controlador de motor paso a paso                   | Pins STEP (3), DIR (4), MS1-MS3 (configurados a 5V), VMOT y GND  |
 | Motor paso a paso  | Actuador que regula la válvula                      | Conectado al driver A4988               |
 | LED RGB            | Indicador visual de estados del sistema            | Pines PWM con resistencias en R y B, común a GND |
+|LDR                 | Foto resistencia                                  | Pin analógico (por ejemplo A0)        |
 
 ---
 
@@ -40,6 +41,7 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
 | Motores paso a paso    | Actuadores para válvulas de frío y calor          | Conectados a los drivers                |
 | LED RGB Azul               | Indica activación de la válvula de frío           | Pin 10                                  |
 | LED RGB Rojo               | Indica activación de la válvula de calor          | Pin 9                                   |
+| LDR                    | Valor de cantidad lumínica (lux)                  | Pin A0                                  |
 
 ---
 
@@ -76,6 +78,7 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
 | LED RGB Azul                 | D10                 | Indica actividad de la válvula de frío           |
 | LED RGB Rojo                 | D9                  | Indica actividad de la válvula de calor          |
 | LCD 1602 (I2C)           | A4 (SDA), A5 (SCL)  | Visualización de datos                 |
+| LDR                      | A0                  | Calcular la cantidad lumínica                    |
 
 ---
 
