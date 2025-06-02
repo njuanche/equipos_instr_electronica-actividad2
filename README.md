@@ -9,15 +9,21 @@ También dispone de un sensor LDR que se utiliza para ajustar la cantidad de led
 
 ## Estructura del hardware
 
-| Componente         | Descripción                                       | Conexiones Arduino                      |
-|--------------------|-------------------------------------------------|---------------------------------------|
-| Arduino Uno        | Microcontrolador principal                        | Fuente de alimentación y pines digitales|
-| DHT22              | Sensor de temperatura y humedad                   | Pin digital (por ejemplo, pin 2)       |
-| LCD 16x2 con I2C   | Display para visualización de datos                | Pines SDA (A4) y SCL (A5)               |
-| Driver A4988       | Controlador de motor paso a paso                   | Pins STEP (3), DIR (4), MS1-MS3 (configurados a 5V), VMOT y GND  |
-| Motor paso a paso  | Actuador que regula la válvula                      | Conectado al driver A4988               |
-| LED RGB            | Indicador visual de estados del sistema            | Pines PWM con resistencias en R y B, común a GND |
+| Componente             | Descripción                                                       | Conexiones Arduino                          |
+|------------------------|-------------------------------------------------------------------|---------------------------------------------|
+| Arduino Uno            | Microcontrolador principal                                        | Fuente de alimentación y pines digitales    |
+| DHT22                  | Sensor de temperatura y humedad                                   | Pin digital 2                               |
+| LCD 16x2 con I2C       | Display para visualización de datos                               | SDA (A4), SCL (A5)                          |
+| Driver A4988 (x2)      | Controlador de motores paso a paso                                | STEP (3 y 5), DIR (4 y 6), VMOT, GND, VDD   |
+| Motores paso a paso    | Actuadores para válvulas de frío y calor                          | Conectados a los drivers A4988              |
+| LED RGB Azul           | Indica activación de la válvula de frío                           | Pin 10 (con resistencia de 220Ω)            |
+| LED RGB Rojo           | Indica activación de la válvula de calor                          | Pin 9 (con resistencia de 220Ω)             |
+| 74HC595                | Registro de desplazamiento para controlar múltiples LEDs          | Pines digitales (11, 12, 13)             |
+| 8 LEDs Amarillos       | Indican niveles de iluminación ambiental                          | Salida del 74HC595 (con resistencias)       |
+| Fotoresistor (LDR)     | Sensor de luz ambiental                                           | Conectado a entrada analógica (A0)      |
+| Resistencias (220Ω)    | Limitación de corriente para LEDs y control de señal              | En serie con LEDs                           |
 
+![Esquema del circuito](esquema.png)
 ---
 
 ## Algoritmo de control para la temperatura
@@ -28,20 +34,6 @@ El objetivo principal de este sistema es mantener la temperatura ambiente cercan
 ### Descripción del sistema
 
 Este proyecto implementa un sistema de control térmico automático que mantiene la temperatura ambiente cerca de un valor de consigna. Se utilizan motores paso a paso para abrir o cerrar válvulas de frío y calor, un sensor DHT22 para lectura de temperatura y un algoritmo de **control discontinuo de tres posiciones con zona muerta**.
-
----
-
-### Estructura del hardware
-
-| Componente             | Descripción                                       | Conexiones Arduino                      |
-|------------------------|---------------------------------------------------|-----------------------------------------|
-| Arduino Uno            | Microcontrolador principal                        | Fuente de alimentación y pines digitales |
-| DHT22                  | Sensor de temperatura y humedad                   | Pin digital 2                            |
-| LCD 16x2 con I2C       | Display para visualización de datos               | Pines SDA (A4) y SCL (A5)               |
-| Driver A4988 (x2)      | Controlador de motores paso a paso                | Pines STEP, DIR, VMOT, GND              |
-| Motores paso a paso    | Actuadores para válvulas de frío y calor          | Conectados a los drivers                |
-| LED RGB Azul               | Indica activación de la válvula de frío           | Pin 10                                  |
-| LED RGB Rojo               | Indica activación de la válvula de calor          | Pin 9                                   |
 
 ---
 
@@ -65,19 +57,6 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
   - Inicialización general
   - Ciclo principal de ejecución
   - Llamadas a funciones de control y actuación
-
----
-
-### Hardware y conexiones utilizadas con qué propósito
-
-| Componente               | Pines Arduino       | Propósito                                        |
-|--------------------------|---------------------|--------------------------------------------------|
-| Sensor DHT22             | D2                  | Lectura digital de temperatura ambiente          |
-| Motor paso a paso (frío) | STEP = 3, DIR = 4   | Control de válvula de refrigeración              |
-| Motor paso a paso (calor)| STEP = 5, DIR = 6   | Control de válvula de calefacción                |
-| LED RGB Azul             | D10                 | Indica actividad de la válvula de frío           |
-| LED RGB Rojo             | D9                  | Indica actividad de la válvula de calor          |
-| LCD 1602 (I2C)           | A4 (SDA), A5 (SCL)  | Visualización de datos                           |
 
 ---
 
@@ -178,17 +157,7 @@ T_{sistema}(t+1) = T_{sistema}(t) + \Delta T_{calor} - \Delta T_{frio} + \Delta 
 $$
 
 ---
-
-### 8. Control de la iluminación
-Se utiliza un sensor LDR a partir del cual se va a obtener la cantidad de LUX a partir de la ecuación:
-Primero se normaliza el valor analógico leido: voltage = (analogValue /1024)*5
-A continuación se calcula el valor de la resistencia: Res = 2000 * voltage / (1 - voltage / 5)
-Con estos dos datos ya se puede calcular los lux: lux = pow(50 * 1e3 * pow(10, 0.7) / Res, (1 / 0.7))
-A partir de la cantidad de LUX detectada por el sistema se encenderán más leds cuanta más oscuridad se detecte.
-Si hay mucha luminosidad no se encenderá ningún led
-
-
-### Lógica de ejecución del sistema
+### Lógica de ejecución del sistema. Resumen
 
 1. Se lee la temperatura ambiente con el DHT22.
 2. Si la lectura falla, se mantiene el valor anterior.
@@ -200,3 +169,95 @@ Si hay mucha luminosidad no se encenderá ningún led
 8. Se simula el efecto térmico de las válvulas y del ambiente.
 
 ---
+### Ejemplo práctico del control de temperatura
+
+En esta imagen real se puede observar la válvula de calor abierta y el LED RGB encendido en color rojo, indicando que el sistema está activando la calefacción para mantener la temperatura deseada.
+
+![Ejemplo de válvula de calor abierta y LED RGB en rojo](ejemplo_temp.jpg)
+
+
+---
+
+## Algoritmo de Control de Iluminación con LDR y Registro de Desplazamiento
+
+Este sistema controla la iluminación artificial mediante 8 LEDs conectados a un registro de desplazamiento **74HC595**, en función de la luz ambiente medida por un sensor **LDR**. El objetivo es mantener la iluminación total próxima al 80% del valor máximo deseado.
+
+---
+
+### Objetivo del sistema
+
+Asegurar que la **iluminación total** (natural + artificial) se mantenga cerca de un valor de referencia (`luxObjetivo = 60000 lux`), utilizando **control proporcional inverso**.
+
+---
+
+### Funcionamiento general
+
+#### 1. Medición de iluminación con LDR
+
+Se obtiene la iluminancia en lux a partir del valor analógico del LDR:
+
+```cpp
+int analogValue = analogRead(LDR_PIN);
+float voltage = analogValue / 1024.0 * 5.0;
+float resistance = 2000.0 * voltage / (1.0 - voltage / 5.0);
+float lux = pow(50e3 * pow(10, 0.7) / resistance, 1.0 / 0.7);
+```
+
+- Se simula un divisor resistivo entre el LDR y una resistencia fija de 2kΩ.
+- Se emplea una fórmula empírica para estimar lux a partir de la resistencia del LDR.
+
+---
+
+#### 2. Control proporcional inverso
+
+El algoritmo determina cuánto falta para llegar al 80% de iluminación objetivo:
+
+```cpp
+float iluminacionAmbientePercent = (lux / luxObjetivo) * 100.0;
+float iluminacionFaltante = 80.0 - iluminacionAmbientePercent;
+```
+
+- Si la luz ambiente es baja, el sistema enciende más LEDs.
+- Si la luz ambiente es suficiente, no se encienden LEDs.
+- Este comportamiento es característico de un **control proporcional inverso**:
+  - Menor entrada → Mayor salida
+  - Mayor entrada → Menor salida
+
+---
+
+#### 3. Actuación con LEDs y 74HC595
+
+Se controla cuántos LEDs encender proporcionalmente a la luz faltante:
+
+```cpp
+int numLEDs = round((iluminacionFaltante / 80.0) * maxLEDs);
+numLEDs = constrain(numLEDs, 0, maxLEDs);
+```
+
+Se construye un byte con los LEDs que deben estar encendidos:
+
+```cpp
+uint8_t leds = 0;
+for (int i = 0; i < numLEDs; i++) {
+  leds |= (1 << i);
+}
+```
+
+Este byte se envía al registro de desplazamiento:
+
+```cpp
+digitalWrite(LATCH_PIN, LOW);
+shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, leds);
+digitalWrite(LATCH_PIN, HIGH);
+```
+
+- El registro 74HC595 permite controlar 8 salidas con solo 3 pines del microcontrolador.
+- Los LEDs se encienden o apagan en bloque según el valor enviado.
+
+---
+
+### Ejemplo práctico del control de iluminación
+
+A continuación se muestra una imagen real donde el sistema ha encendido dos LEDs, indicando que la iluminación ambiental es baja y el sistema está compensando para alcanzar el nivel deseado.
+
+![Ejemplo de dos luces encendidas en el control de iluminación](ejemplo_ilum.png)
