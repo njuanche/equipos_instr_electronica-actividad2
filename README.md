@@ -1,7 +1,9 @@
 # Sistema de control y actuación en función del clima
 ## Descripción del sistema
 
-xxxxxx
+Sistema enfocado en una boya oceanográfica que tomará medidas de la temperatura y la humedad del aire.
+Dispone de un sistema para controlar la temperatura de las baterias de tal forma que si estan muy calientes se abrirá una trampilla que permita el paso de aire para refrigerarlas. En caso de que la temperatura sea muy fría se activarán las resistencias para mantener una temperatura óptima para el funcionamiento de las baterias.
+También dispone de un sensor LDR que se utiliza para ajustar la cantidad de leds que deben estar encendidos.
 
 ---
 
@@ -68,14 +70,14 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
 
 ### Hardware y conexiones utilizadas con qué propósito
 
-| Componente                | Pines Arduino       | Propósito                                         |
+| Componente               | Pines Arduino       | Propósito                                        |
 |--------------------------|---------------------|--------------------------------------------------|
 | Sensor DHT22             | D2                  | Lectura digital de temperatura ambiente          |
 | Motor paso a paso (frío) | STEP = 3, DIR = 4   | Control de válvula de refrigeración              |
 | Motor paso a paso (calor)| STEP = 5, DIR = 6   | Control de válvula de calefacción                |
-| LED RGB Azul                 | D10                 | Indica actividad de la válvula de frío           |
-| LED RGB Rojo                 | D9                  | Indica actividad de la válvula de calor          |
-| LCD 1602 (I2C)           | A4 (SDA), A5 (SCL)  | Visualización de datos                 |
+| LED RGB Azul             | D10                 | Indica actividad de la válvula de frío           |
+| LED RGB Rojo             | D9                  | Indica actividad de la válvula de calor          |
+| LCD 1602 (I2C)           | A4 (SDA), A5 (SCL)  | Visualización de datos                           |
 
 ---
 
@@ -176,6 +178,15 @@ T_{sistema}(t+1) = T_{sistema}(t) + \Delta T_{calor} - \Delta T_{frio} + \Delta 
 $$
 
 ---
+
+### 8. Control de la iluminación
+Se utiliza un sensor LDR a partir del cual se va a obtener la cantidad de LUX a partir de la ecuación:
+Primero se normaliza el valor analógico leido: voltage = (analogValue /1024)*5
+A continuación se calcula el valor de la resistencia: Res = 2000 * voltage / (1 - voltage / 5)
+Con estos dos datos ya se puede calcular los lux: lux = pow(50 * 1e3 * pow(10, 0.7) / Res, (1 / 0.7))
+A partir de la cantidad de LUX detectada por el sistema se encenderán más leds cuanta más oscuridad se detecte.
+Si hay mucha luminosidad no se encenderá ningún led
+
 
 ### Lógica de ejecución del sistema
 
