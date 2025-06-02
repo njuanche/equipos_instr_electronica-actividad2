@@ -53,10 +53,18 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
   - Aplicación de zona muerta
   - Simulación térmica interna
 
+- **ControlIluminacion.h / ControlIluminacion.cpp**  
+  Lógica y control del sistema de iluminación:
+  - Lectura del sensor LDR para medir la luz ambiental (lux)
+  - Cálculo del porcentaje de iluminación ambiente respecto al objetivo
+  - Control escalonado de LEDs mediante registro de desplazamiento (shift register)
+  - Visualización de datos de iluminación en pantalla LCD
+
 - **sketch.ino**  
   - Inicialización general
   - Ciclo principal de ejecución
   - Llamadas a funciones de control y actuación
+
 
 ---
 
@@ -173,7 +181,7 @@ $$
 
 En esta imagen real se puede observar la válvula de calor abierta y el LED RGB encendido en color rojo, indicando que el sistema está activando la calefacción para mantener la temperatura deseada.
 
-![Ejemplo de válvula de calor abierta y LED RGB en rojo](ejemplo_temp.jpg)
+![Ejemplo de válvula de calor abierta y LED RGB en rojo](ejemplo_temp.png)
 
 
 ---
