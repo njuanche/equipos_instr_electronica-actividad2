@@ -26,18 +26,7 @@ También dispone de un sensor LDR que se utiliza para ajustar la cantidad de led
 ![Esquema del circuito](esquema.png)
 ---
 
-## Algoritmo de control para la temperatura
-
-El objetivo principal de este sistema es mantener la temperatura ambiente cercana a un setpoint definido mediante un control discontinuo de tres posiciones con zona muerta. El sistema regula la apertura de válvulas de frío y calor mediante motores paso a paso, controlados proporcionalmente en base a la diferencia térmica. Se evita el sobrecontrol mediante una zona muerta configurable.
-
-
-### Descripción del sistema
-
-Este proyecto implementa un sistema de control térmico automático que mantiene la temperatura ambiente cerca de un valor de consigna. Se utilizan motores paso a paso para abrir o cerrar válvulas de frío y calor, un sensor DHT22 para lectura de temperatura y un algoritmo de **control discontinuo de tres posiciones con zona muerta**.
-
----
-
-### Organización de archivos
+## Organización de archivos
 
 - **MotorPaso.h / MotorPaso.cpp**  
   Control de los motores de frío y calor:
@@ -65,6 +54,17 @@ Este proyecto implementa un sistema de control térmico automático que mantiene
   - Ciclo principal de ejecución
   - Llamadas a funciones de control y actuación
 
+
+---
+
+## Algoritmo de control para la temperatura
+
+El objetivo principal de este sistema es mantener la temperatura ambiente cercana a un setpoint definido mediante un control discontinuo de tres posiciones con zona muerta. El sistema regula la apertura de válvulas de frío y calor mediante motores paso a paso, controlados proporcionalmente en base a la diferencia térmica. Se evita el sobrecontrol mediante una zona muerta configurable.
+
+
+### Descripción del sistema
+
+Este proyecto implementa un sistema de control térmico automático que mantiene la temperatura ambiente cerca de un valor de consigna. Se utilizan motores paso a paso para abrir o cerrar válvulas de frío y calor, un sensor DHT22 para lectura de temperatura y un algoritmo de **control discontinuo de tres posiciones con zona muerta**.
 
 ---
 
